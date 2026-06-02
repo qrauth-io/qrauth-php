@@ -6,6 +6,7 @@ composer.lock
 *.log
 .php-cs-fixer.cache
 .phpunit.result.cache
+.phpunit.cache/
 build/
 coverage/
 .vscode/
@@ -13,3 +14,4 @@ coverage/
 *.swp
 *.swo
 *~
+/notes.md
