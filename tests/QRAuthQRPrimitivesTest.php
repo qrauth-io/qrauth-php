@@ -74,8 +74,35 @@ final class QRAuthQRPrimitivesTest extends TestCase
         $this->assertSame('https://example.com/landing', $body['destinationUrl']);
         $this->assertSame('Trade Show 2026', $body['label']);
         $this->assertSame(['lat' => 40.7128, 'lng' => -74.0060, 'radiusM' => 100], $body['location']);
-        // expiresAt is sent as ISO 8601, not seconds.
-        $this->assertSame('2026-06-07T12:00:00.000+00:00', $body['expiresAt']);
+        // expiresAt is sent as ISO 8601 normalized to UTC with the `Z`
+        // suffix — the qrauth.io backend's default Zod `datetime()`
+        // schema rejects numeric offsets like `+00:00`.
+        $this->assertSame('2026-06-07T12:00:00.000Z', $body['expiresAt']);
+    }
+
+    public function testCreateNormalizesNonUtcExpiryToZuluFormat(): void
+    {
+        $this->http->queueResponse(201, [
+            'token' => 'tok_abc',
+            'verification_url' => 'https://qrauth.io/v/tok_abc',
+            'qr_image_url' => 'https://example.com/qr.png',
+            'signature' => 'sig',
+            'organization_id' => 'org_42',
+            'label' => null,
+            'created_at' => '2026-05-07T12:00:00Z',
+            'expires_at' => '2026-06-07T12:00:00Z',
+            'transparency_log_index' => 1,
+            'alg_version' => 'hybrid-ecdsa-slhdsa-v1',
+            'merkle_batch_id' => 'mb_1',
+        ]);
+
+        $this->client->create(
+            destinationUrl: 'https://example.com/landing',
+            expiresAt: new DateTimeImmutable('2026-06-07T15:00:00+03:00'),
+        );
+
+        $body = json_decode((string) $this->http->lastRequest()->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame('2026-06-07T12:00:00.000Z', $body['expiresAt']);
     }
 
     public function testVerifyIsPublicAndForwardsClientCoords(): void

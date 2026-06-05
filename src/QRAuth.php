@@ -165,7 +165,7 @@ class QRAuth
      * @param string             $destinationUrl The URL the QR will redirect to (max 2048 chars).
      * @param string|null        $label          Optional human-readable label (max 200 chars).
      * @param LocationData|null  $location       Optional geofence binding (`{lat, lng, radiusM}`).
-     * @param \DateTimeInterface|null $expiresAt Optional expiry. Serialized as ISO 8601 (`Y-m-d\TH:i:s.uP`).
+     * @param \DateTimeInterface|null $expiresAt Optional expiry. Normalized to UTC and serialized as ISO 8601 with the `Z` suffix (`Y-m-d\TH:i:s.v\Z`) — the qrauth.io backend's default Zod `datetime()` schema rejects numeric offsets.
      * @param int|null           $maxScans       Optional total scan cap.
      * @param int|null           $maxScansPerDevice Optional per-device scan cap.
      */
@@ -187,7 +187,9 @@ class QRAuth
             $payload['location'] = $location->toArray();
         }
         if ($expiresAt !== null) {
-            $payload['expiresAt'] = $expiresAt->format('Y-m-d\TH:i:s.vP');
+            $payload['expiresAt'] = (new \DateTimeImmutable('@'.$expiresAt->getTimestamp()))
+                ->setTimezone(new \DateTimeZone('UTC'))
+                ->format('Y-m-d\TH:i:s.v\Z');
         }
         if ($maxScans !== null) {
             $payload['maxScans'] = $maxScans;

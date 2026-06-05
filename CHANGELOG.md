@@ -5,6 +5,16 @@ All notable changes to `qrauth/qrauth-php` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1]
+
+### Fixed
+
+- **`create()` now serializes `expiresAt` as `Y-m-d\TH:i:s.v\Z` in UTC.**
+  The previous format (`Y-m-d\TH:i:s.vP`) emitted a numeric offset
+  (`+00:00` / `+03:00`), which the qrauth.io backend's default Zod
+  `datetime()` schema rejects with `400 Validation Error`. The datetime
+  is now normalized to UTC and emitted with the `Z` suffix.
+
 ## [Unreleased]
 
 ### Wire-contract alignment with the QRAuth backend
