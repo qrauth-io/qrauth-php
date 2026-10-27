@@ -5,7 +5,9 @@ All notable changes to `qrauth/qrauth-php` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0]
+## [Unreleased]
+
+## [0.2.0] — 2026-10-27
 
 ### Changed (breaking)
 
@@ -35,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Verify tests use real API responses (tests/Fixtures) for all three trust
   states, including revoked and flagged codes.
 
-## [0.1.1]
+## [0.1.1] — 2026-06-05
 
 ### Fixed
 
@@ -45,15 +47,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `datetime()` schema rejects with `400 Validation Error`. The datetime
   is now normalized to UTC and emitted with the `Z` suffix.
 
-## [Unreleased]
+## [0.1.0] — 2026-06-03
+
+First tagged release. It builds on the initial scaffolding (commit `bc35ab7`,
+2026-04-04, not tagged): a `QRAuth` client class with `create`, `verify`,
+`revoke`, `list` methods using `Authorization: Bearer {apiKey}` and Guzzle 7
+directly. The sections below describe the changes relative to that scaffolding.
 
 ### Wire-contract alignment with the QRAuth backend
 
-This release rewrites the SDK's HTTP layer to match the actual `qrauth-io/qrauth`
-API. Previous releases were built against a contract that did not match what the
-deployed backend accepts; in practice almost every method would have failed.
-Every change in this section is **breaking** for callers of the previous shape,
-but consistent with the upstream zod schemas and route source.
+This release's HTTP layer matches the `qrauth-io/qrauth` API. Every change in
+this section is **breaking** relative to the initial scaffolding, and consistent
+with the upstream zod schemas and route source.
 
 #### Authentication
 
@@ -237,13 +242,5 @@ but consistent with the upstream zod schemas and route source.
   catch `QRAuth\Exception\QRAuthExceptionInterface` (or the concrete
   subclasses) instead.
 
-These changes affect callers of the previous `0.1.0` scaffolding only;
-nothing has been published to Packagist yet under the previous shape.
-
-## [0.1.0] — 2026-04-04
-
-### Added
-
-- Initial scaffolding: `QRAuth` client class with `create`, `verify`,
-  `revoke`, `list` methods using `Authorization: Bearer {apiKey}` and
-  Guzzle 7 directly.
+These changes are relative to the initial scaffolding, which was not
+tagged as a release.

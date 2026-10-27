@@ -1,5 +1,7 @@
 # QRAuth PHP SDK
 
+[![CI](https://github.com/qrauth-io/qrauth-php/actions/workflows/ci.yml/badge.svg)](https://github.com/qrauth-io/qrauth-php/actions/workflows/ci.yml)
+
 The official PHP SDK for [QRAuth](https://qrauth.io) — passwordless QR authentication and signed-QR verification.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
