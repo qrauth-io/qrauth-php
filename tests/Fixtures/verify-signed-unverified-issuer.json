@@ -1,0 +1,26 @@
+{
+  "verified": false,
+  "trust_state": "SIGNED_UNVERIFIED_ISSUER",
+  "organization": {
+    "verified": false
+  },
+  "destination_url": "https://example.com/pay",
+  "security": {
+    "signatureValid": true,
+    "proxyDetected": false,
+    "trustScore": 100,
+    "transparencyLogVerified": true,
+    "algVersion": "hybrid-ecdsa-slhdsa-v1",
+    "algVersionStatus": "accepted",
+    "pqcProtected": true,
+    "merkleProofValid": true,
+    "merkleBatchId": "0b60fd0fc00af28e9377acc9e4194bbb"
+  },
+  "warnings": [],
+  "location_match": {
+    "matched": false,
+    "distanceM": null,
+    "registeredAddress": null
+  },
+  "scannedAt": "2026-10-27T15:16:47.739Z"
+}

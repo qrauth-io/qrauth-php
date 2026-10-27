@@ -1,0 +1,20 @@
+{
+  "verified": false,
+  "trust_state": "UNTRUSTED",
+  "reason": "This QR code has been revoked by its issuer.",
+  "organization": {
+    "verified": false
+  },
+  "location_match": {
+    "matched": false,
+    "distanceM": null,
+    "registeredAddress": null
+  },
+  "security": {
+    "signatureValid": false,
+    "proxyDetected": false,
+    "trustScore": 0,
+    "transparencyLogVerified": false
+  },
+  "scannedAt": "2026-10-27T15:16:47.816Z"
+}

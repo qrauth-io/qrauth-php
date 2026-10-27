@@ -9,10 +9,12 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use QRAuth\DTO\LocationData;
 use QRAuth\DTO\QRCode;
+use QRAuth\DTO\TrustState;
 use QRAuth\Exception\ApiException;
 use QRAuth\Exception\InvalidResponseException;
 use QRAuth\QRAuth;
 use QRAuth\Tests\Support\MockHttpClient;
+use QRAuth\Tests\Support\VerifyFixtures;
 
 final class QRAuthQRPrimitivesTest extends TestCase
 {
@@ -112,11 +114,9 @@ final class QRAuthQRPrimitivesTest extends TestCase
         $result = $this->client->verify('weird/token with spaces', clientLat: 40.0, clientLng: -74.0);
 
         $this->assertTrue($result->verified);
-        $this->assertSame('Acme Inc.', $result->organization->name);
-        $this->assertSame('high', $result->organization->trustLevel);
-        $this->assertSame(0.92, $result->security->trustScore);
+        $this->assertSame(TrustState::Verified, $result->trustState);
+        $this->assertSame('Acme Wire Ltd', $result->organization->name);
         $this->assertTrue($result->security->signatureValid);
-        $this->assertTrue($result->locationMatch->matched);
 
         $request = $this->http->lastRequest();
         // Verify is public — no auth header.
@@ -220,38 +220,13 @@ final class QRAuthQRPrimitivesTest extends TestCase
     }
 
     /**
+     * A real VERIFIED response (tests/Fixtures/verify-verified.json).
+     *
      * @return array<string, mixed>
      */
     private function verifyResponseRow(): array
     {
-        return [
-            'verified' => true,
-            'organization' => [
-                'id' => 'org_42',
-                'name' => 'Acme Inc.',
-                'slug' => 'acme',
-                'trustLevel' => 'high',
-                'kycStatus' => 'verified',
-                'domainVerified' => true,
-            ],
-            'destination_url' => 'https://example.com',
-            'location_match' => [
-                'matched' => true,
-                'distanceM' => 14.0,
-                'registeredAddress' => null,
-            ],
-            'security' => [
-                'signatureValid' => true,
-                'proxyDetected' => false,
-                'trustScore' => 0.92,
-                'transparencyLogVerified' => true,
-                'algVersion' => 'hybrid-ecdsa-slhdsa-v1',
-                'pqcProtected' => true,
-                'merkleProofValid' => true,
-                'merkleBatchId' => 'mb_1',
-            ],
-            'scannedAt' => '2026-05-07T12:05:00Z',
-        ];
+        return VerifyFixtures::load('verify-verified');
     }
 
     /**

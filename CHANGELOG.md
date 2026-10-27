@@ -5,6 +5,36 @@ All notable changes to `qrauth/qrauth-php` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0]
+
+### Changed (breaking)
+
+`verify()` results follow the verify API's trust states:
+
+- **New `VerifyResult::$trustState`**, a backed enum `QRAuth\DTO\TrustState`:
+  `Verified` (`VERIFIED`), `SignedUnverifiedIssuer` (`SIGNED_UNVERIFIED_ISSUER`)
+  and `Untrusted` (`UNTRUSTED`).
+- **`VerifyResult::$verified`** is `true` only when `trustState` is `Verified`,
+  which requires an issuer verified by QRAuth. An authentic code from an issuer
+  QRAuth has not verified returns `verified === false` with
+  `TrustState::SignedUnverifiedIssuer`.
+- **`VerifyResult::$destinationUrl` is `?string`.** It is `null` on failure
+  responses (revoked, expired, scan limit, suspended issuer, flagged
+  destination).
+- **`Organization`** is now `{ verified: bool, name: ?string, verifiedDomain: ?string }`.
+  `name` and `verifiedDomain` are set only when `verified` is `true`. The
+  `id`, `slug`, `trustLevel`, `kycStatus` and `domainVerified` properties are
+  removed because the API no longer returns them.
+
+### Fixed
+
+- `verify()` parses the current verify response format in all trust states.
+
+### Tests
+
+- Verify tests use real API responses (tests/Fixtures) for all three trust
+  states, including revoked and flagged codes.
+
 ## [0.1.1]
 
 ### Fixed
