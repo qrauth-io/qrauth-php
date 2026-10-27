@@ -1,0 +1,32 @@
+{
+  "verified": false,
+  "trust_state": "UNTRUSTED",
+  "domain_warning": {
+    "message": "This URL looks similar to \"acme-wire.example\" which belongs to verified organization \"Acme Wire Ltd\". Proceed with caution.",
+    "similar_to": "acme-wire.example",
+    "verified_org": "Acme Wire Ltd",
+    "similarity": 95
+  },
+  "organization": {
+    "verified": false
+  },
+  "destination_url": "https://acme-wlre.example/login",
+  "security": {
+    "signatureValid": true,
+    "proxyDetected": false,
+    "trustScore": 50,
+    "transparencyLogVerified": true,
+    "algVersion": "hybrid-ecdsa-slhdsa-v1",
+    "algVersionStatus": "accepted",
+    "pqcProtected": true,
+    "merkleProofValid": true,
+    "merkleBatchId": "819b3c178d1e7348476764508f5b8181"
+  },
+  "warnings": [],
+  "location_match": {
+    "matched": false,
+    "distanceM": null,
+    "registeredAddress": null
+  },
+  "scannedAt": "2026-10-27T15:16:47.781Z"
+}

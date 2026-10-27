@@ -1,0 +1,28 @@
+{
+  "verified": true,
+  "trust_state": "VERIFIED",
+  "organization": {
+    "verified": true,
+    "name": "Acme Wire Ltd",
+    "verified_domain": "acme-wire.example"
+  },
+  "destination_url": "https://acme-wire.example/pay",
+  "security": {
+    "signatureValid": true,
+    "proxyDetected": false,
+    "trustScore": 100,
+    "transparencyLogVerified": true,
+    "algVersion": "hybrid-ecdsa-slhdsa-v1",
+    "algVersionStatus": "accepted",
+    "pqcProtected": true,
+    "merkleProofValid": true,
+    "merkleBatchId": "66bf5be9628fb36a774adcc6dbad8608"
+  },
+  "warnings": [],
+  "location_match": {
+    "matched": false,
+    "distanceM": null,
+    "registeredAddress": null
+  },
+  "scannedAt": "2026-10-27T15:16:47.703Z"
+}

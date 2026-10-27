@@ -112,19 +112,35 @@ echo $qr->verificationUrl;   // → opens on any phone camera
 To verify a scan server-side:
 
 ```php
+use QRAuth\DTO\TrustState;
+
 $result = $qrauth->verify(
     token:      $token,
     clientLat:  40.7128,
     clientLng:  -74.0060,
 );
 
-if ($result->verified
-    && $result->locationMatch->matched
-    && $result->security->trustScore > 0.8
-) {
-    // count it as a high-confidence verified scan
+switch ($result->trustState) {
+    case TrustState::Verified:
+        // Authentic, and QRAuth has verified who issued it.
+        echo $result->organization->name;        // issuer name
+        echo $result->organization->verifiedDomain; // e.g. example.com (may be null)
+        break;
+    case TrustState::SignedUnverifiedIssuer:
+        // Authentic signed code, but the issuer is not verified by QRAuth.
+        // No issuer name is returned; show the destination host instead.
+        echo parse_url((string) $result->destinationUrl, PHP_URL_HOST);
+        break;
+    case TrustState::Untrusted:
+        // Revoked, expired, flagged, lookalike destination, ...
+        echo $result->reason;                    // may be null
+        break;
 }
 ```
+
+`$result->verified` is `true` only for `TrustState::Verified`.
+`$result->destinationUrl` is `null` on failure responses (revoked, expired,
+scan limit, suspended issuer, flagged destination).
 
 ## API surface
 

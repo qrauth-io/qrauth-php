@@ -11,15 +11,21 @@ use QRAuth\Exception\InvalidResponseException;
 /**
  * Result of {@see \QRAuth\QRAuth::verify()}.
  *
- * `verified` is the high-level boolean — `true` only when the QR's
- * signature is valid, the row is `ACTIVE`, and (when applicable) the
- * proximity check passes. The {@see SecurityInfo::$signatureValid}
- * flag exposes the cryptographic check on its own; on a revoked or
- * expired code the signature can verify even though `verified` is
- * `false`.
+ * `trustState` is the outcome: {@see TrustState::Verified},
+ * {@see TrustState::SignedUnverifiedIssuer} or {@see TrustState::Untrusted}.
  *
- * `reason` is set when `verified` is `false` (e.g. `revoked`, `expired`,
- * `signature_invalid`).
+ * `verified` is `true` only when `trustState === TrustState::Verified`, which
+ * requires an issuer verified by QRAuth. An authentic code from an issuer
+ * QRAuth has not verified gives `verified === false` with
+ * `trustState === TrustState::SignedUnverifiedIssuer`; check
+ * `trustState !== TrustState::Untrusted` to accept both.
+ *
+ * `organization` names the issuer only for `Verified` results (see
+ * {@see Organization}). `destinationUrl` is `null` on failure responses
+ * (revoked, expired, scan limit, suspended issuer, flagged destination).
+ *
+ * `reason` is set on many non-`Verified` results (e.g. "This QR code has
+ * been revoked by its issuer.").
  *
  * `warnings` is an advisory list with codes like `ALG_DEPRECATED`,
  * `TOKEN_EXPIRING_SOON`, `GEO_MISMATCH_SOFT`. The SDK exposes them as
@@ -33,9 +39,10 @@ final class VerifyResult
      */
     public function __construct(
         public readonly bool $verified,
+        public readonly TrustState $trustState,
         public readonly ?string $reason,
         public readonly Organization $organization,
-        public readonly string $destinationUrl,
+        public readonly ?string $destinationUrl,
         public readonly LocationMatch $locationMatch,
         public readonly SecurityInfo $security,
         public readonly array $warnings,
@@ -54,6 +61,12 @@ final class VerifyResult
             throw new InvalidResponseException('VerifyResult: missing or non-boolean `verified`');
         }
 
+        $trustStateRaw = $data['trust_state'] ?? null;
+        $trustState = is_string($trustStateRaw) ? TrustState::tryFrom($trustStateRaw) : null;
+        if ($trustState === null) {
+            throw new InvalidResponseException('VerifyResult: missing or unknown `trust_state`');
+        }
+
         $reason = $data['reason'] ?? null;
         if ($reason !== null && ! is_string($reason)) {
             throw new InvalidResponseException('VerifyResult: `reason` must be a string when present');
@@ -65,8 +78,8 @@ final class VerifyResult
         }
 
         $destinationUrl = $data['destination_url'] ?? null;
-        if (! is_string($destinationUrl) || $destinationUrl === '') {
-            throw new InvalidResponseException('VerifyResult: missing or empty `destination_url`');
+        if ($destinationUrl !== null && (! is_string($destinationUrl) || $destinationUrl === '')) {
+            throw new InvalidResponseException('VerifyResult: `destination_url` must be a non-empty string when present');
         }
 
         $locationMatch = $data['location_match'] ?? null;
@@ -105,6 +118,7 @@ final class VerifyResult
 
         return new self(
             verified: $verified,
+            trustState: $trustState,
             reason: $reason,
             organization: Organization::fromArray($organization),
             destinationUrl: $destinationUrl,
